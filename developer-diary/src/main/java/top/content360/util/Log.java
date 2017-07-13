@@ -6,10 +6,15 @@ import java.util.Date;
 public class Log {
 
 	private static final boolean log = true;
+	private static final boolean withTime = true;
 	
 	public static void log(String str){
 		if(log){
-			System.out.println(getTimeStr() + str);
+			if(withTime){
+				System.out.println(getTimeStr() + str);
+			}else{
+				System.out.println(str);
+			}
 		}
 	}
 	
