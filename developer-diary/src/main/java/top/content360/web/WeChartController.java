@@ -1,7 +1,5 @@
 package top.content360.web;
 
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import top.content360.services.AccessTokenService;
 import top.content360.services.MessageService;
-import top.content360.util.CheckUtil;
 import top.content360.util.Log;
 import top.content360.util.RequestUtil;
 
@@ -22,6 +20,9 @@ public class WeChartController extends BaseController{
 
 	@Autowired
 	MessageService messageService;
+	
+	@Autowired
+	AccessTokenService tokenService;
 	
 	@RequestMapping("/io")
 	public String io(HttpServletRequest request, HttpServletResponse response) {
@@ -41,5 +42,21 @@ public class WeChartController extends BaseController{
 		return null;
 	}
 	
-	
+	@RequestMapping("/updateMenu")
+	public String updateMenu(HttpServletRequest request, HttpServletResponse response) {
+
+		Log.log("request from : " + RequestUtil.getRemoteHost(request));
+		Log.log("query uri is : " + request.getQueryString());
+		
+		try {
+			request.setCharacterEncoding("UTF-8");
+		} catch (UnsupportedEncodingException e1) {
+			e1.printStackTrace();
+		}
+		response.setCharacterEncoding("UTF-8");
+		
+		messageService.updateMenu(request, response);
+		
+		return null;
+	}
 }

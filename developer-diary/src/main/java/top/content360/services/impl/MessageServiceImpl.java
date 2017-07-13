@@ -11,21 +11,27 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import net.sf.json.JSONObject;
 import top.content360.entities.MessagePojo;
-import top.content360.enums.MsgType;
+import top.content360.po.AccessToken;
 import top.content360.po.Message;
 import top.content360.po.TextMessage;
 import top.content360.repositorys.MessagePojoRepository;
+import top.content360.services.AccessTokenService;
 import top.content360.services.MessageService;
 import top.content360.util.CheckUtil;
 import top.content360.util.Log;
 import top.content360.util.MessageUtil;
+import top.content360.util.WeixinUtil;
 
 @Service(MessageService.SERVICE_NAME)
 public class MessageServiceImpl implements MessageService{
 
 	@Autowired
 	private MessagePojoRepository msessageRepository; 
+	
+	@Autowired
+	private AccessTokenService tokenService;
 	
 	@Override
 	public void handMessage(HttpServletRequest request, HttpServletResponse response) {
@@ -135,5 +141,22 @@ public class MessageServiceImpl implements MessageService{
 		if(CheckUtil.checkSignature(signature, timestamp, nonce)){
 			out.println(echostr);
 		}
+	}
+
+	@Override
+	public boolean updateMenu(HttpServletRequest request, HttpServletResponse response) {
+		
+		boolean success = false;
+		AccessToken token = tokenService.getToken(request);
+		
+		String menu = JSONObject.fromObject(WeixinUtil.initMenu()).toString();
+		int result = WeixinUtil.createMenu(token.getToken(), menu);
+		
+		if(result == 0){
+			Log.log("微信菜单更新成功");
+			success = true;
+		}
+		
+		return success;
 	}
 }
