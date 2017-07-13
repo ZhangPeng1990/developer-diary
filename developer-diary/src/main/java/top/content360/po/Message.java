@@ -6,6 +6,7 @@ public class Message {
 	private Long CreateTime;
 	private String MsgType;
 	private String MsgId;
+	private String Event;
 	
 	public String getToUserName() {
 		return ToUserName;
@@ -37,5 +38,10 @@ public class Message {
 	public void setMsgId(String msgId) {
 		MsgId = msgId;
 	}
-	
+	public String getEvent() {
+		return Event;
+	}
+	public void setEvent(String event) {
+		Event = event;
+	}
 }

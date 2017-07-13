@@ -13,7 +13,7 @@ import org.dom4j.Element;
 
 import com.thoughtworks.xstream.XStream;
 
-import top.content360.po.TextMessage;
+import top.content360.po.Message;
 
 public class MessageUtil {
 
@@ -41,9 +41,9 @@ public class MessageUtil {
 		return null;
 	}
 	
-	public static String textMessage2Xml(TextMessage textMessage){
+	public static String message2Xml(Message message){
 		XStream xstream = new XStream();
-		xstream.alias("xml", textMessage.getClass());
-		return xstream.toXML(textMessage);
+		xstream.alias("xml", message.getClass());
+		return xstream.toXML(message);
 	}
 }
