@@ -1,5 +1,6 @@
 package top.content360.util;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -20,4 +21,9 @@ public class XmlUtil {
 		return doc;
 	}
 	
+	public static Document getDocument(File xmlFile) throws DocumentException{
+		SAXReader reader = new SAXReader();
+		Document doc = reader.read(xmlFile);
+		return doc;
+	}
 }

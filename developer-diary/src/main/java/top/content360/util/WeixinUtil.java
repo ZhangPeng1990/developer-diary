@@ -1,7 +1,9 @@
 package top.content360.util;
 
 
+import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -12,9 +14,16 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.util.CollectionUtils;
 
 import net.sf.json.JSONObject;
 import top.content360.conf.Constants;
+import top.content360.exceptions.ValidationFailureException;
 import top.content360.menu.Button;
 import top.content360.menu.ClickButton;
 import top.content360.menu.Menu;
@@ -84,39 +93,100 @@ public class WeixinUtil {
 	 * 初始化微信菜单
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public static Menu initMenu(){
 		Log.log("begin init Menu");
 		
+		Resource resource = new ClassPathResource("Menu.xml");
+		File menuXmlFile = null;
+		try {
+			menuXmlFile = resource.getFile();
+		} catch (IOException e) {
+			throw new ValidationFailureException("Can't load menu file : Menu.xml");
+		}
+		
+		Document menuDoc = null;
+		try {
+			menuDoc = XmlUtil.getDocument(menuXmlFile);
+		} catch (DocumentException e) {
+			throw new ValidationFailureException("Can't load menu file to Document");
+		}
+		
 		Menu menu = new Menu();
+		Button[] buttons = new Button[3];
+		menu.setButton(buttons);
 		
-		ClickButton button1 = new ClickButton();
-		button1.setName("翻日记");
-		button1.setType("click");
-		button1.setKey("11111");
+		Element rootElement = menuDoc.getRootElement();
+		List<Element> elements = rootElement.elements("Button");
+		if(CollectionUtils.isEmpty(elements) || elements.size() != 3){
+			throw new ValidationFailureException("The content of Menu.xml is not right.");
+		}
 		
-		ViewButton button2 = new ViewButton();
-		button2.setName("写日记");
-		button2.setType("view");
-		button2.setUrl("http://www.baidu.com");
 		
-		Button button3 = new Button();
-		button3.setName("关于");
-		button1.setKey("3333");
+		for (int i = 0; i < 3; i++) {
+			Button button = null;
+			Element e = elements.get(i);
+			if(e.element("type") != null){
+				String buttonType = e.element("type").getTextTrim();
+				switch (buttonType) {
+				case "click":
+					button = new ClickButton(e.element("key").getTextTrim());
+					break;
+					
+				case "view":
+					button = new ViewButton(e.element("url").getTextTrim());
+					break;
+					
+				default:
+					button = new Button();
+					break;
+				}
+				button.setType(e.element("type").getTextTrim());
+			}else{
+				button = new Button();
+			}
+			button.setName(e.element("name").getText());
+			buttons[i] = button;
+			
+			//sub buttons
+			List<Element> sub_es = e.elements("sub_button");
+			if(!CollectionUtils.isEmpty(sub_es)){
+				addSubButtons(button, e);
+			}
+		}
 		
-		ClickButton button3_1 = new ClickButton();
-		button3_1.setName("联系我们");
-		button3_1.setKey("3111");
-		button3_1.setType("scancode_push");
-		
-		ClickButton button3_2 = new ClickButton();
-		button3_2.setName("关于我们");
-		button3_2.setKey("3111");
-		button3_2.setType("scancode_push");
-		
-		button3.setSub_button(new Button[]{button3_1, button3_2});
-		
-		menu.setButton(new Button[]{button1, button2, button3});
 		return menu;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private static void addSubButtons(Button fatherButton, Element e){
+		List<Element> subButtonEs = (List<Element> ) e.elements("sub_button");
+		int i = 0;
+		Button subButtons[] = new Button[subButtonEs.size()];
+		
+		for (Element sub_e : subButtonEs) {
+			fatherButton.setSub_button(subButtons);
+			Button subButton = null;
+			if(sub_e.element("type") != null){
+				String buttonType = sub_e.element("type").getTextTrim();
+				switch (buttonType) {
+				case "click":
+					subButton = new ClickButton(sub_e.element("key").getTextTrim());
+					break;
+					
+				case "view":
+					subButton = new ViewButton(sub_e.element("url").getTextTrim());
+					break;
+					
+				default:
+					break;
+				}
+				subButton.setType(sub_e.element("type").getTextTrim());
+				subButton.setName(sub_e.element("name").getText());
+				subButtons[i] = subButton;
+			}
+			i++;
+		}
 	}
 	
 	public static int createMenu(String token, String menu){
@@ -127,5 +197,9 @@ public class WeixinUtil {
 			result = jsonObject.getInt("errcode");
 		}
 		return result;
+	}
+	
+	public static void main(String[] args) {
+		initMenu();
 	}
 }

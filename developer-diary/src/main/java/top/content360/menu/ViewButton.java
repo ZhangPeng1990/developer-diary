@@ -6,6 +6,13 @@ package top.content360.menu;
  */
 public class ViewButton extends Button {
 
+	public ViewButton(){}
+	
+	public ViewButton(String url){
+		super();
+		this.url = url;
+	}
+	
 	private String url;
 
 	public String getUrl() {

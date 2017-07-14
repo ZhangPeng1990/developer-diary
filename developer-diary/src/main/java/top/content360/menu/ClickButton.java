@@ -2,6 +2,13 @@ package top.content360.menu;
 
 public class ClickButton extends Button {
 
+	public ClickButton(){}
+	
+	public ClickButton(String key){
+		super();
+		this.key = key;
+	}
+	
 	private String key;
 
 	public String getKey() {

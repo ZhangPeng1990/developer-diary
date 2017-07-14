@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import top.content360.services.AccessTokenService;
 import top.content360.services.MessageService;
@@ -42,6 +43,7 @@ public class WeChartController extends BaseController{
 		return null;
 	}
 	
+	@ResponseBody
 	@RequestMapping("/updateMenu")
 	public String updateMenu(HttpServletRequest request, HttpServletResponse response) {
 
@@ -55,8 +57,8 @@ public class WeChartController extends BaseController{
 		}
 		response.setCharacterEncoding("UTF-8");
 		
-		messageService.updateMenu(request, response);
+		boolean result = messageService.updateMenu(request, response);
 		
-		return null;
+		return result ? "update success" : "update failed";
 	}
 }
