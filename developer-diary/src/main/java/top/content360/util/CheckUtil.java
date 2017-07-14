@@ -5,13 +5,15 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
-import top.content360.conf.Constants;
+import top.content360.conf.Confs;
 
 public class CheckUtil {
 
+	private static Confs confs = new Confs();
+	
 	public static boolean checkSignature(String signature, String timestamp, String nonce){
 		
-		String[] arr = new String[]{Constants.TOKEN, timestamp, nonce};
+		String[] arr = new String[]{confs.load(Confs.TOKEN), timestamp, nonce};
 		
 		Arrays.sort(arr);
 		

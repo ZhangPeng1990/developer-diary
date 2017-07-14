@@ -22,7 +22,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.util.CollectionUtils;
 
 import net.sf.json.JSONObject;
-import top.content360.conf.Constants;
+import top.content360.conf.Confs;
 import top.content360.exceptions.ValidationFailureException;
 import top.content360.menu.Button;
 import top.content360.menu.ClickButton;
@@ -30,6 +30,8 @@ import top.content360.menu.Menu;
 import top.content360.menu.ViewButton;
 import top.content360.po.AccessToken;
 public class WeixinUtil {
+	
+	private static Confs confs = new Confs();
 
 	/**
 	 *获取access_token
@@ -37,7 +39,7 @@ public class WeixinUtil {
 	 */
 	public static AccessToken getAccessToken(){
 		AccessToken token = new AccessToken();
-		String url = Constants.ACCESS_TOKEN_URL.replace("APPID", Constants.APPID).replace("APPSECRET", Constants.APPSECRET);
+		String url = confs.load(Confs.ACCESS_TOKEN_URL).replace("APPID", confs.load(Confs.APPID)).replace("APPSECRET", confs.load(Confs.APPSECRET));
 		JSONObject jsonObject = doGetStr(url);
 		if(jsonObject != null){
 			token.setToken(jsonObject.getString("access_token"));
@@ -191,7 +193,7 @@ public class WeixinUtil {
 	
 	public static int createMenu(String token, String menu){
 		int result = 1;
-		String url = Constants.CREATE_MENU_URL.replace("ACCESS_TOKEN", token);
+		String url = confs.load(Confs.CREATE_MENU_URL).replace("ACCESS_TOKEN", token);
 		JSONObject jsonObject = dopostStr(url, menu);
 		if(jsonObject != null){
 			result = jsonObject.getInt("errcode");

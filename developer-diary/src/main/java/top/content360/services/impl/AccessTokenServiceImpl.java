@@ -1,7 +1,5 @@
 package top.content360.services.impl;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -11,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import top.content360.conf.Constants;
+import top.content360.conf.Confs;
 import top.content360.entities.AccessTokenPojo;
 import top.content360.po.AccessToken;
 import top.content360.repositorys.AccessTokenPojoRepository;
@@ -22,6 +20,8 @@ import top.content360.util.WeixinUtil;
 @Service(AccessTokenService.SERVICE_NAME)
 public class AccessTokenServiceImpl implements AccessTokenService{
 
+	private static Confs confs = new Confs();
+	
 	@Autowired
 	AccessTokenPojoRepository tokenRepository;
 
@@ -29,7 +29,7 @@ public class AccessTokenServiceImpl implements AccessTokenService{
 	public AccessToken getToken(HttpServletRequest request) {
 		
 		String requestHost = request.getLocalAddr();
-		String queryString = Constants.APPID + Constants.APPSECRET;
+		String queryString = confs.load(Confs.APPID) + confs.load(Confs.APPSECRET);
 		
 		List<AccessTokenPojo> tokens = tokenRepository.findByRequestHostAndrequestQuery(requestHost, queryString);
 		if(tokens != null && tokens.size() > 0){
