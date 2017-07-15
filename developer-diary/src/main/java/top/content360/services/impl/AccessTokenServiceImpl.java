@@ -20,8 +20,6 @@ import top.content360.util.WeixinUtil;
 @Service(AccessTokenService.SERVICE_NAME)
 public class AccessTokenServiceImpl implements AccessTokenService{
 
-	private static Confs confs = new Confs();
-	
 	@Autowired
 	AccessTokenPojoRepository tokenRepository;
 
@@ -29,7 +27,7 @@ public class AccessTokenServiceImpl implements AccessTokenService{
 	public AccessToken getToken(HttpServletRequest request) {
 		
 		String requestHost = request.getLocalAddr();
-		String queryString = confs.load(Confs.APPID) + confs.load(Confs.APPSECRET);
+		String queryString = Confs.instance.load(Confs.APPID) + Confs.instance.load(Confs.APPSECRET);
 		
 		List<AccessTokenPojo> tokens = tokenRepository.findByRequestHostAndrequestQuery(requestHost, queryString);
 		if(tokens != null && tokens.size() > 0){

@@ -9,11 +9,9 @@ import top.content360.conf.Confs;
 
 public class CheckUtil {
 
-	private static Confs confs = new Confs();
-	
 	public static boolean checkSignature(String signature, String timestamp, String nonce){
 		
-		String[] arr = new String[]{confs.load(Confs.TOKEN), timestamp, nonce};
+		String[] arr = new String[]{Confs.instance.load(Confs.TOKEN), timestamp, nonce};
 		
 		Arrays.sort(arr);
 		

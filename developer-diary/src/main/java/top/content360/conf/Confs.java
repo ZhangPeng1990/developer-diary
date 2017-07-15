@@ -1,20 +1,31 @@
 package top.content360.conf;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
+import java.io.IOException;
+import java.util.Properties;
 
-@Configuration
-@ComponentScan(basePackages = { "top.content360.conf.*" })
-@PropertySource("classpath:system_conf.properties") 
+import org.springframework.context.annotation.Bean;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+
+import top.content360.exceptions.SystemException;
+
 public class Confs {
 	
-	@Autowired
-	private Environment env;
+	public static Confs instance = new Confs();
+	private final String confsFile = "system_conf.properties";
 	
+	private Confs(){
+		Resource resource = new ClassPathResource(confsFile);
+		props = new Properties();
+		try {
+			props.load(resource.getInputStream());
+		} catch (IOException e) {
+			throw new SystemException("can not load config file : " + this.confsFile);
+		}  
+	}
+
+	private Properties props;
+	 
 	public static final String APPID = "wechat.appid";
 	public static final String APPSECRET = "wechat.appsecret";
 	public static final String TOKEN = "wechat.token";
@@ -24,6 +35,9 @@ public class Confs {
 	
 	@Bean
 	public String load(String key){
-		return env.getProperty(key);
+		if(null == props){
+			throw new SystemException("can not load config file : " + this.confsFile);
+		}
+		return props.getProperty(key);
 	}
 }

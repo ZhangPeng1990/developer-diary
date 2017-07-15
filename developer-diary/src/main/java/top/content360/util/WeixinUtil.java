@@ -31,15 +31,13 @@ import top.content360.menu.ViewButton;
 import top.content360.po.AccessToken;
 public class WeixinUtil {
 	
-	private static Confs confs = new Confs();
-
 	/**
 	 *获取access_token
 	 * @return
 	 */
 	public static AccessToken getAccessToken(){
 		AccessToken token = new AccessToken();
-		String url = confs.load(Confs.ACCESS_TOKEN_URL).replace("APPID", confs.load(Confs.APPID)).replace("APPSECRET", confs.load(Confs.APPSECRET));
+		String url = Confs.instance.load(Confs.ACCESS_TOKEN_URL).replace("APPID", Confs.instance.load(Confs.APPID)).replace("APPSECRET", Confs.instance.load(Confs.APPSECRET));
 		JSONObject jsonObject = doGetStr(url);
 		if(jsonObject != null){
 			token.setToken(jsonObject.getString("access_token"));
@@ -193,7 +191,7 @@ public class WeixinUtil {
 	
 	public static int createMenu(String token, String menu){
 		int result = 1;
-		String url = confs.load(Confs.CREATE_MENU_URL).replace("ACCESS_TOKEN", token);
+		String url = Confs.instance.load(Confs.CREATE_MENU_URL).replace("ACCESS_TOKEN", token);
 		JSONObject jsonObject = dopostStr(url, menu);
 		if(jsonObject != null){
 			result = jsonObject.getInt("errcode");
